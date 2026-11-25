@@ -1,59 +1,26 @@
-# AEROSIM
+# DragSail — Free Molecular Flow Calculator
 
-Free, open-source rarefied-aerodynamics workbench for **CubeSat and conical drag-sail deorbit studies**: free-molecular flow (FMF) calculations, DSMC configuration for [SPARTA](https://sparta.github.io/), atmospheric dataset management and (planned) FMF-vs-DSMC comparison. No paid APIs; runs locally on SQLite.
+Browser-only engineering calculator for drag on a DragSail spacecraft in LEO (250–400 km).
+Free to host on GitHub Pages; no backend, accounts or paid services.
 
-![tests](https://github.com/OWNER/REPO/actions/workflows/tests.yml/badge.svg) <!-- replace OWNER/REPO -->
+**Status: Phase 1 of 8 (foundation).** Navigation, dashboard, responsive layout and deployment only.
+No calculation engine yet; dashboard values are empty by design. See the roadmap in the project prompt.
 
-## Status
-
-| Phase | Scope | Version | State |
-|---|---|---|---|
-| 1 | Atmospheric data manager (upload, column mapping, validation, versions) | 0.1.0 | done |
-| 2 | Geometry + FMF engine (Maxwell, Sentman, panel method) | 0.2.0 | done |
-| 3 | DSMC parameter manager + SPARTA input generation | 0.3.0 | done (backend) |
-| 4 | Local SPARTA runner, output import | - | planned |
-| 5 | FMF vs DSMC comparison, graphs, reports | - | planned |
-
-The React frontend is not built yet; use the interactive API docs at `/docs`. See [CHANGELOG.md](CHANGELOG.md).
-
-## Architecture
-
-```mermaid
-flowchart LR
-  UI[React frontend - planned] -->|JSON| API[FastAPI]
-  API --> DB[(SQLite)]
-  API --> FS[[data/: uploads, STL, SPARTA files]]
-  API --> FMF[FMF engine: Maxwell / Sentman + panels]
-  API --> GEN[SPARTA script generator]
-  GEN -.->|Phase 4| SP[(local SPARTA executable)]
-```
-
-## Quick start
-
+## Run locally
 ```bash
-cd backend
-pip install -r requirements.txt
-uvicorn app.main:app --reload     # http://localhost:8000/docs
-pytest
+npm install
+npm run dev        # development
+npm run build      # production build into dist/
+npm run preview    # serve the production build
 ```
 
-## Typical workflow
+## Deploy to GitHub Pages
+1. Create a GitHub repository and push this folder to the `main` branch.
+2. In the repository: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+3. Each push to `main` runs `.github/workflows/deploy.yml` and publishes `dist/`.
+4. The site appears at `https://<user>.github.io/<repo>/`.
 
-1. `POST /api/atmosphere/inspect` then `/api/atmosphere/datasets`: upload an NRLMSISE-00 CSV/TXT and confirm the column mapping.
-2. `POST /api/geometry`: define the CubeSat body and conical sail.
-3. `POST /api/fmf/run`: Cd, Cl, forces and moments versus altitude and attitude.
-4. `POST /api/dsmc/defaults`, then `/api/dsmc/configurations`, then `/configurations/{id}/generate`: SPARTA input files in `backend/data/sparta/`.
+The build uses a relative base (`base: './'`) and hash routing (`#/page`), so it works under any repository name with no extra configuration.
 
-## Scientific notes
-
-- FMF models follow Schaaf and Chambre / Sentman; frame conventions and limitations are in each stored result.
-- Generated SPARTA scripts are **not executed or verified** by AEROSIM yet. Nothing is reported as a simulation result until a real SPARTA run is imported (Phase 4).
-- Approximate collision diameters for O, N and H are flagged in the code; review them before publishing results.
-
-## Releasing
-
-Bump `backend/app/__init__.py`, add a `CHANGELOG.md` entry, tag the release. CI fails if the current version has no changelog entry.
-
-## License
-
-MIT, see [LICENSE](LICENSE).
+## Structure
+`src/calculations/` is reserved for the UI-independent scientific engine (phases 3–4, 8).
