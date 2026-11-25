@@ -1,10 +1,2 @@
-__pycache__/
-*.pyc
-.pytest_cache/
-.venv/
-venv/
-node_modules/
-dist/
-backend/data/
-.env
-.DS_Store
+node_modules
+dist
