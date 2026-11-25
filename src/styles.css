@@ -74,3 +74,32 @@ th { color: var(--muted); font-weight: 500; font-size: 0.85rem; }
   .sidebar li a.active { border-bottom-color: var(--cyan); }
   .main { padding: 1rem; }
 }
+.tag.experimental { color: var(--blue); border-color: var(--blue); }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0.75rem 1rem; align-items: end; }
+.field { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.85rem; color: var(--muted); }
+.field.wide { grid-column: 1 / -1; }
+.check { display: flex; gap: 0.5rem; align-items: center; font-size: 0.9rem; margin-top: 0.5rem; }
+input:not([type=checkbox]):not([type=radio]), select, textarea { background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 0.4rem 0.5rem; font: inherit; width: 100%; }
+button { background: var(--blue); color: #fff; border: 0; border-radius: 6px; padding: 0.5rem 1rem; font: inherit; cursor: pointer; margin-top: 0.5rem; }
+button.ghost { background: transparent; border: 1px solid var(--line); color: var(--text); }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+.scroll { overflow-x: auto; max-height: 360px; overflow-y: auto; }
+code { color: var(--cyan); }
+.solution summary { cursor: pointer; font-size: 1.05rem; }
+.solution h3 { font-size: 0.85rem; color: var(--muted); font-weight: 600; margin: 1rem 0 0.25rem; }
+.eq.block { display: block; overflow-x: auto; padding: 0.25rem 0; }
+.kind { font-size: 0.7rem; border: 1px solid var(--line); border-radius: 999px; padding: 0 0.45rem; margin-left: 0.4rem; color: var(--muted); }
+.kind.user { color: var(--cyan); border-color: var(--cyan); } .kind.assumed { color: var(--warn); border-color: var(--warn); }
+.kind.atmosphere { color: #7fb3ff; border-color: #7fb3ff; } .kind.numerical { color: #7ee2a8; border-color: #7ee2a8; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; } .toolbar button { margin-top: 0; }
+.search { margin-bottom: 1rem; }
+.katex { color: var(--text); }
+.graph { width: 100%; height: auto; }
+.check.inline { display: inline-flex; margin-right: 1rem; }
+.report h1 { font-size: 1.5rem; } .report h2 { margin-top: 1.5rem; font-size: 1.15rem; }
+@media print {
+  .sidebar, .noprint, .header, button, .toolbar { display: none !important; }
+  .shell { display: block; } .main { padding: 0; max-width: none; }
+  html, body, .card, .warning { background: #fff !important; color: #000 !important; border-color: #bbb !important; }
+  .katex, a, code, .note, th { color: #000 !important; } .solution { break-inside: avoid; }
+}

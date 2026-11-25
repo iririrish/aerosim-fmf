@@ -3,8 +3,7 @@
 Browser-only engineering calculator for drag on a DragSail spacecraft in LEO (250–400 km).
 Free to host on GitHub Pages; no backend, accounts or paid services.
 
-**Status: Phase 1 of 8 (foundation).** Navigation, dashboard, responsive layout and deployment only.
-No calculation engine yet; dashboard values are empty by design. See the roadmap in the project prompt.
+**Status: phases 1–8 implemented.** Maxwell and Sentman/DRIA are experimental; CLL is not implemented. PDF export uses the browser's Print → Save as PDF.
 
 ## Run locally
 ```bash
@@ -12,6 +11,7 @@ npm install
 npm run dev        # development
 npm run build      # production build into dist/
 npm run preview    # serve the production build
+npm test           # validation suite (also runs before every deployment)
 ```
 
 ## Deploy to GitHub Pages

@@ -4,7 +4,7 @@ import { MODELS, CURRENT_PHASE } from '../data/routes.js';
 import { load } from '../services/localStorage.js';
 
 export default function Dashboard() {
-  // Phase 1 has no calculation engine, so every field is genuinely empty.
+  // Empty until a calculation has been run and saved.
   const latest = load('latestCalculation', null);
   const history = load('history', []);
   const r = latest?.results ?? {};
@@ -12,10 +12,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <WarningPanel kind="info" title="Foundation release (phase 1 of 8)">
-        Navigation, layout and deployment are in place. No calculation engine exists yet, so all
-        results below are empty rather than estimated. Atmospheric import arrives in phase 2.
-      </WarningPanel>
+      <WarningPanel kind="info" title="Phases 1–8 complete">All modules are live. Maxwell and Sentman remain labelled experimental until you document the validation suite as passed for your use; CLL is planned.</WarningPanel>
 
       <section className="grid cards">
         <ResultCard label="Atmospheric density" value={r.density ?? null} unit="kg/m³" hint="Total mass density from the uploaded dataset" />
