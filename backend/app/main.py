@@ -18,7 +18,8 @@ def db():
 with db() as _c:
     _c.executescript((Path(__file__).parent / "schema.sql").read_text())
 
-app = FastAPI(title="AEROSIM")
+from . import __version__
+app = FastAPI(title="AEROSIM", version=__version__)
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173"], allow_methods=["*"], allow_headers=["*"])
 
 # ---- unit tables (factor to SI) ----
@@ -248,3 +249,9 @@ def dashboard():
         out["completed_simulations"] = c.execute("SELECT COUNT(*) FROM dsmc_jobs WHERE status='completed'").fetchone()[0]
         out["recent_activity"] = [dict(r) for r in c.execute("SELECT kind,message,created_at FROM activity_log ORDER BY id DESC LIMIT 10")]
     return out
+
+from .routes_phase2 import router  # noqa: E402  (Phase 2 routes)
+app.include_router(router)
+
+from .routes_dsmc import router as dsmc_router  # noqa: E402  (Phase 3 routes)
+app.include_router(dsmc_router)

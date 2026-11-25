@@ -1,27 +1,59 @@
-# AEROSIM - Phase 1
+# AEROSIM
+
+Free, open-source rarefied-aerodynamics workbench for **CubeSat and conical drag-sail deorbit studies**: free-molecular flow (FMF) calculations, DSMC configuration for [SPARTA](https://sparta.github.io/), atmospheric dataset management and (planned) FMF-vs-DSMC comparison. No paid APIs; runs locally on SQLite.
+
+![tests](https://github.com/OWNER/REPO/actions/workflows/tests.yml/badge.svg) <!-- replace OWNER/REPO -->
+
+## Status
+
+| Phase | Scope | Version | State |
+|---|---|---|---|
+| 1 | Atmospheric data manager (upload, column mapping, validation, versions) | 0.1.0 | done |
+| 2 | Geometry + FMF engine (Maxwell, Sentman, panel method) | 0.2.0 | done |
+| 3 | DSMC parameter manager + SPARTA input generation | 0.3.0 | done (backend) |
+| 4 | Local SPARTA runner, output import | - | planned |
+| 5 | FMF vs DSMC comparison, graphs, reports | - | planned |
+
+The React frontend is not built yet; use the interactive API docs at `/docs`. See [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
-React/TS/Tailwind/shadcn/Three.js/Plotly (Phase 1b, localhost:5173)  --HTTP/JSON-->  FastAPI (backend/app/main.py)
-FastAPI --> SQLite (data/aerosim.db) + local files (data/atmosphere, later data/geometry, data/sparta)
-Later phases add backend modules: fmf/ (engine), dsmc/ (config, SPARTA script generator, job manager), compare/, reports/.
-All profiles are stored in SI (m, K, kg/m^3, m^-3); the original upload is kept byte-for-byte.
 
-## Schema
-All 15 suggested tables plus dataset_versions and activity_log are created from backend/app/schema.sql (dsmc_jobs.status is constrained to draft/validating/ready/running/completed/failed).
+```mermaid
+flowchart LR
+  UI[React frontend - planned] -->|JSON| API[FastAPI]
+  API --> DB[(SQLite)]
+  API --> FS[[data/: uploads, STL, SPARTA files]]
+  API --> FMF[FMF engine: Maxwell / Sentman + panels]
+  API --> GEN[SPARTA script generator]
+  GEN -.->|Phase 4| SP[(local SPARTA executable)]
+```
 
-## Plan
-1. Foundation, DB, atmospheric upload, column mapping, preview, validation, duplicates, versions (this phase).
-2. Geometry (STL, versions), FMF engine (Maxwell, Sentman, panel method with shadowing), results.
-3. DSMC parameter manager, SPARTA script generation.
-4. Local SPARTA runner (background jobs), output import.
-5. FMF vs DSMC comparison, graphs, PDF/CSV/JSON reports.
+## Quick start
 
-## Run
-    cd backend && pip install -r requirements.txt
-    uvicorn app.main:app --reload      # API docs at http://localhost:8000/docs
-    pytest
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn app.main:app --reload     # http://localhost:8000/docs
+pytest
+```
 
-## Upload flow
-POST /api/atmosphere/inspect (header, preview, suggested mapping, duplicate check) -> user edits mapping/units ->
-POST /api/atmosphere/datasets (validates, converts to SI, stores). Validation checks: numeric/finite values, altitude >= 0 and unique,
-density > 0, T in 50-5000 K, species mass density vs total density (warn above 20%).
+## Typical workflow
+
+1. `POST /api/atmosphere/inspect` then `/api/atmosphere/datasets`: upload an NRLMSISE-00 CSV/TXT and confirm the column mapping.
+2. `POST /api/geometry`: define the CubeSat body and conical sail.
+3. `POST /api/fmf/run`: Cd, Cl, forces and moments versus altitude and attitude.
+4. `POST /api/dsmc/defaults`, then `/api/dsmc/configurations`, then `/configurations/{id}/generate`: SPARTA input files in `backend/data/sparta/`.
+
+## Scientific notes
+
+- FMF models follow Schaaf and Chambre / Sentman; frame conventions and limitations are in each stored result.
+- Generated SPARTA scripts are **not executed or verified** by AEROSIM yet. Nothing is reported as a simulation result until a real SPARTA run is imported (Phase 4).
+- Approximate collision diameters for O, N and H are flagged in the code; review them before publishing results.
+
+## Releasing
+
+Bump `backend/app/__init__.py`, add a `CHANGELOG.md` entry, tag the release. CI fails if the current version has no changelog entry.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
